@@ -70,7 +70,7 @@ export class Line implements ShapePlugin {
         const endY = b.bottom - shapeHeight * Math.sin(rotatingRadian);
 
         this.createLine(ctx, startX, startY, endX, endY);
-        this.createShape(ctx, startX, startY, endX, endY, shapeHeight, shapeWidth, rotatingRadian);
+        this.createEdge(ctx, startX, startY, endX, endY, shapeHeight, shapeWidth, rotatingRadian);
         this.createText(ctx);
     }
 
@@ -88,7 +88,7 @@ export class Line implements ShapePlugin {
         });
     }
 
-    private createShape(ctx: RenderContext, startX: number, startY: number, endX: number, endY: number, height: number, width: number, rotatingRadian: number) {
+    private createEdge(ctx: RenderContext, startX: number, startY: number, endX: number, endY: number, height: number, width: number, rotatingRadian: number) {
         const startType = ctx.shape.getAppearance('START_LINE');
         const endType = ctx.shape.getAppearance('END_LINE');
 

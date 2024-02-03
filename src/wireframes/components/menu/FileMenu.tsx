@@ -9,7 +9,7 @@ import { ModalForm } from '../overlay/ModalForm';
 import type { MenuProps } from 'antd';
 import { MenuIcon } from '@app/style/icomoon/icomoon_icon';
 
-export const FileMenu = React.memo(() => {
+export const FileMenu = () => {
     const dispatch = useDispatch();
     const forLoading = useLoading();
     const editor = useStore(getEditor);
@@ -64,13 +64,13 @@ export const FileMenu = React.memo(() => {
         if (key == 'Rename') {
             setIsRename(true);
         } else if (key == forLoading.newDiagram.label) {
-            forLoading.newDiagram.onAction;
+            dispatch(forLoading.newDiagram.onAction);
         } else if (key == forLoading.openDiagramAction.label) {
-            forLoading.openDiagramAction.onAction;
+            dispatch(forLoading.openDiagramAction.onAction);
         } else if (key == forLoading.saveDiagram.label) {
-            forLoading.saveDiagram.onAction;
+            dispatch(forLoading.saveDiagram.onAction);
         } else if (key == forLoading.saveDiagramToFile.label) {
-            forLoading.saveDiagramToFile.onAction;
+            dispatch(forLoading.saveDiagramToFile.onAction);
         }
     }
 
@@ -101,4 +101,4 @@ export const FileMenu = React.memo(() => {
             />
         </>
     );
-});
+};

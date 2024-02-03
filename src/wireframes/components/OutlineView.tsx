@@ -9,7 +9,7 @@ import * as React from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import { useDispatch } from 'react-redux';
 import { useEventCallback } from '@app/core';
-import { getDiagram, moveItems, orderItems, removeItems, resetIDItems, selectItems, useStore } from '@app/wireframes/model';
+import { getDiagram, moveItems, orderItems, removeItems, renameItems, selectItems, useStore } from '@app/wireframes/model';
 import { OutlineMenu, OutlineMenuAction } from './menu/OutlineMenu';
 import './styles/OutlineView.scss';
 
@@ -26,7 +26,7 @@ export const OutlineView = () => {
                 dispatch(orderItems(arg, diagram!, [itemId]));
                 break;
             case 'Rename':
-                dispatch(resetIDItems(diagram!, [itemId], arg));
+                dispatch(renameItems(diagram!, [itemId], arg));
                 break;
             case 'Select':
                 dispatch(selectItems(diagram!, [itemId]));

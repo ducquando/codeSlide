@@ -9,7 +9,7 @@ import { AnyAction } from 'redux';
 import { Types } from '@app/core';
 import { changeItemsAppearance, transformItems } from './appearance';
 import { changeColor, changeSize, renameDiagram } from './diagrams';
-import { resetIDItems, selectItems } from './items';
+import { renameItems, selectItems } from './items';
 
 export function mergeAction(action: AnyAction, prevAction: AnyAction): AnyAction | null {
     if (action.type !== prevAction.type) {
@@ -47,7 +47,7 @@ export function mergeAction(action: AnyAction, prevAction: AnyAction): AnyAction
     if (changeColor.match(prevAction) ||
         changeSize.match(prevAction) ||
         renameDiagram.match(prevAction) ||
-        resetIDItems.match(prevAction)) {
+        renameItems.match(prevAction)) {
         return action;
     }
 

@@ -20,6 +20,9 @@ type ItemProps = {
     // The locking state.
     isLocked?: boolean;
 
+    // The name of the item.
+    name?: string;
+
     // The type of the item.
     type: 'Shape' | 'Group';
 };
@@ -64,6 +67,9 @@ type InitialItemProps = {
 
     // The locking state.
     isLocked?: boolean;
+
+    // The name of the item.
+    name?: string;
 };
 
 export type InitialShapeProps = {
@@ -100,6 +106,10 @@ export class DiagramItem extends Record<Props> implements Shape {
 
     public get type() {
         return this.get('type');
+    }
+
+    public get name() {
+        return this.get('name');
     }
 
     public get appearance() {
@@ -191,13 +201,14 @@ export class DiagramItem extends Record<Props> implements Shape {
     }
 
     public static createGroup(setup: InitialGroupProps = {}) {
-        const { id, childIds, isLocked, rotation } = setup;
+        const { id, childIds, isLocked, name, rotation } = setup;
 
         const props: GroupProps & ItemProps = {
             id: id || MathHelper.nextId(),
             childCache: {},
             childIds: ImmutableList.of(childIds),
             isLocked,
+            name,
             rotation: rotation || Rotation.ZERO,
             type: 'Group',
         };
@@ -206,7 +217,7 @@ export class DiagramItem extends Record<Props> implements Shape {
     }
 
     public static createShape(setup: InitialShapeProps) {
-        const { id, appearance, configurables, constraint, isLocked, renderer, transform } = setup;
+        const { id, appearance, configurables, constraint, isLocked, name, renderer, transform } = setup;
 
         const props: ShapeProps & ItemProps = {
             id: id || MathHelper.nextId(),
@@ -214,6 +225,7 @@ export class DiagramItem extends Record<Props> implements Shape {
             configurables,
             constraint,
             isLocked,
+            name,
             renderCache: {},
             renderer,
             transform: transform || Transform.ZERO,
@@ -231,8 +243,8 @@ export class DiagramItem extends Record<Props> implements Shape {
         return this.set('isLocked', undefined);
     }
 
-    public resetID(id: string) {
-        return this.set('id', id);
+    public rename(name: string) {
+        return this.set('name', name);
     }
 
     public replaceAppearance(appearance:ImmutableMap<any>) {

@@ -8,14 +8,28 @@
 import { Col, Input, Row } from 'antd';
 import * as React from 'react';
 import { texts } from '@app/texts';
-import { getSelectedItems, useStore } from '@app/wireframes/model';
+import { getDiagram, getSelectedItems, useStore, renameItems } from '@app/wireframes/model';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 export const ShapeProperties = React.memo(() => {
+    const dispatch = useDispatch();
+    const diagram = useStore(getDiagram);
     const [ selectedItem ] = useStore(getSelectedItems);
+    const name = !selectedItem ? '' : !selectedItem.name ? selectedItem.id : selectedItem.name;
+    const [itemID, setItemID] = useState<string>(name);
 
-    if (!selectedItem) {
-        return <></>;
-    } 
+    const renameItem = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newName = event.target.value;
+        console.log(newName);
+        setItemID(newName);
+        dispatch(renameItems(diagram!, [selectedItem.id], newName));
+    };
+
+    React.useEffect(() => {
+        const name = !selectedItem ? '' : !selectedItem.name ? selectedItem.id : selectedItem.name;
+        setItemID(name);
+    }, [selectedItem, renameItem]);
 
     return (
         <>
@@ -23,7 +37,8 @@ export const ShapeProperties = React.memo(() => {
                 <Col span={4} className='property-label'>{texts.common.id}</Col>
                 <Col span={20} className='property-value'>
                     <Input 
-                        value={selectedItem.id} 
+                        value={itemID} 
+                        onChange={renameItem}
                     />
                 </Col>
             </Row>

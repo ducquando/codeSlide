@@ -139,7 +139,7 @@ describe('EditorState', () => {
     });
 
     it('should return orignal state when size not changed', () => {
-        const state_2 = state_1.changeSize(new Vec2(1000, 1000));
+        const state_2 = state_1.changeSize(new Vec2(1280, 720));
 
         expect(state_2).toBe(state_1);
     });

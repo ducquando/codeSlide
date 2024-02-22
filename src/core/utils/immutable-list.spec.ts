@@ -31,6 +31,14 @@ describe('ImmutableList', () => {
         expect(list_1.at(2)).toBe(3);
     });
 
+    it('should add indexes', () => {
+        const list_1 = ImmutableList.of([1, 2, 3]);
+
+        expect(list_1.indexOf(1)).toEqual(0);
+        expect(list_1.indexOf(2)).toEqual(1);
+        expect(list_1.indexOf(3)).toEqual(2);        
+    });
+
     it('should add values', () => {
         const list_1 = ImmutableList.empty<number>();
         const list_2 = list_1.add(1);
@@ -43,7 +51,7 @@ describe('ImmutableList', () => {
         const items: number[] = null!;
 
         const list_1 = ImmutableList.empty<number>();
-        const list_2 = list_1.add(...items);
+        const list_2 = list_1.add.apply(list_1, items);
 
         expect(list_2).toEqual(list_1);
     });
@@ -72,7 +80,7 @@ describe('ImmutableList', () => {
         const items: string[] = null!;
 
         const list_1 = ImmutableList.of([1]);
-        const list_2 = list_1.remove(...items);
+        const list_2 = list_1.remove.apply(list_1, items);
 
         expect(list_2).toBe(list_1);
     });

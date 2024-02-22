@@ -23,6 +23,10 @@ export class ImmutableList<T> {
         return this.items[index];
     }
 
+    public indexOf(item: T) {
+        return this.items.indexOf(item);
+    }
+
     constructor(
         private readonly items: ReadonlyArray<T>,
     ) {
@@ -47,7 +51,7 @@ export class ImmutableList<T> {
     }
 
     public add(...items: ReadonlyArray<T>) {
-        if (!items || items.length === 0) {
+        if (items.length === 0) {
             return this;
         }
 
@@ -57,7 +61,7 @@ export class ImmutableList<T> {
     }
 
     public remove(...items: ReadonlyArray<T>) {
-        if (!items || items.length === 0) {
+        if (items.length === 0) {
             return this;
         }
 

@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ComponentMeta } from '@storybook/react';
+import { Meta } from '@storybook/react';
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
 import { Color, Rect2, SVGHelper } from '@app/core';
@@ -60,7 +60,7 @@ const RendererHelper = ({ render }: { render: (renderer: SVGRenderer2, width: nu
 
 export default {
     component: RendererHelper,
-} as ComponentMeta<typeof RendererHelper>;
+} as Meta<typeof RendererHelper>;
 
 export const Rect = () => {
     return (

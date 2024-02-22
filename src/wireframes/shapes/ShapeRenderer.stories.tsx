@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ComponentMeta } from '@storybook/react';
+import { Meta } from '@storybook/react';
 import * as React from 'react';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { ShapeRenderer } from './ShapeRenderer';
@@ -40,7 +40,7 @@ export default {
             },
         },
     },
-} as ComponentMeta<typeof ShapeRenderer>;
+} as Meta<typeof ShapeRenderer>;
 
 
 export const Textbox = () => {

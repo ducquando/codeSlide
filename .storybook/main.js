@@ -18,20 +18,18 @@ module.exports = {
         '../src/**/*.stories.mdx',
         '../src/**/*.stories.@(js|jsx|ts|tsx)'
     ],
+
     addons: [
         '@storybook/addon-links',
         '@storybook/addon-essentials'
     ],
-    core: {
-        builder: 'webpack5'
-    },
-    framework: '@storybook/react',
-    webpackFinal: async (config) => {
-        // https://github.com/storybookjs/storybook/issues/12019
-        config.module.rules[0].use[0].options.plugins = [
-            ['@babel/proposal-class-properties', { 'loose': true }]
-        ];
 
+    framework: {
+        name: '@storybook/react-webpack5',
+        options: {}
+    },
+
+    webpackFinal: async (config) => {
         config.module.rules.push({
             test: /\.scss$/,
             use: [{
@@ -56,5 +54,9 @@ module.exports = {
         ];
 
         return config;
+    },
+
+    docs: {
+        autodocs: true
     }
 }

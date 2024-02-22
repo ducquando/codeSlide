@@ -5,13 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
+import { Meta } from '@storybook/react';
 import * as React from 'react';
 import { Shortcut } from './Shortcut';
 
 export default {
     component: Shortcut,
-} as ComponentMeta<typeof Shortcut>;
+} as Meta<typeof Shortcut>;
 
 const Template = (args: any) => {
     return (

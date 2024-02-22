@@ -509,7 +509,7 @@ class Properties implements ShapeProperties {
         }
 
         this.propertiesNew = {};
-        this.propertiesOld = this.element.node['properties'] || {};
+        this.propertiesOld = (this.element.node as any)['properties'] || {};
     }
 
     public setBackgroundColor(color: RendererColor | null | undefined): ShapeProperties {
@@ -638,7 +638,7 @@ class Properties implements ShapeProperties {
             }
         }
 
-        this.element.node['properties'] = this.propertiesNew;
+        (this.element.node as any)['properties'] = this.propertiesNew;
     }
 }
 

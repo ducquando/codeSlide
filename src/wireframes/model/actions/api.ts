@@ -1,11 +1,11 @@
 /*
- * mydraft.cc
+ * codeslide.net
  *
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-const API_URL = process.env.NODE_ENV === 'test_development' ? 'http://localhost:4000' : 'https://api.mydraft.cc';
+const API_URL = process.env.NODE_ENV === 'test_development' ? 'http://localhost:4000' : 'https://api.codeslide.net';
 
 export async function getDiagram(readToken: string) {
     const response = await fetch(`${API_URL}/${readToken}`);

@@ -1,12 +1,12 @@
 /*
- * mydraft.cc
+ * codeslide.net
  *
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
 /*
- * mydraft.cc
+ * codeslide.net
  *
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.

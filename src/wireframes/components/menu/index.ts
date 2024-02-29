@@ -1,4 +1,3 @@
-export * from './AnimationMenu';
 export * from './ArrangeMenu';
 export * from './ClipboardMenu';
 export * from './FileMenu';

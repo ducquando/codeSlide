@@ -1,5 +1,5 @@
 /*
- * mydraft.cc
+ * codeslide.net
  *
  * Do Duc Quan
  * 8 Nov 2023
@@ -10,7 +10,7 @@ import { Button, Dropdown, Form, Input } from 'antd';
 import type { MenuProps } from 'antd';
 import { getDiagramId, useStore, addShape } from '@app/wireframes/model';
 import * as React from 'react';
-import { CircleIcon, FunctionIcon, ImageIcon, RectangleIcon, TableIcon, TextIcon, TriangleIcon, ShapesIcon, LinkIcon, HeadingIcon, SubHeadingIcon, ParagraphIcon, DiamondIcon, VectorIcon, LineIcon } from '@app/icons/icon';
+import { ArrowIcon, CircleIcon, FunctionIcon, ImageIcon, RectangleIcon, TableIcon, TextIcon, TriangleIcon, ShapesIcon, LinkIcon, HeadingIcon, SubHeadingIcon, ParagraphIcon, DiamondIcon, VectorIcon, LineIcon } from '@app/icons/icon';
 import './styles/ShapeView.scss';
 import { useState } from 'react';
 import classNames from 'classnames';
@@ -110,9 +110,14 @@ export const ShapeView = React.memo(() => {
 
     const lineMenu: MenuProps['items'] = [
         { key: 'Line', label: 'Line', icon: <LineIcon />, className: 'menu-shape', },
+        { key: 'Arrow', label: 'Arrow', icon: <ArrowIcon />, className: 'menu-shape', },
     ];
-    const lineMenuEvt: MenuProps['onClick'] = () => {
-        createNewShape('Line', { 'FONT_SIZE': 24 });
+    const lineMenuEvt: MenuProps['onClick'] = ({ key }) => {
+        if (key == 'Arrow') {
+            createNewShape('Line', { 'END_LINE': 'Arrow', 'FONT_SIZE': 24 });
+        } else {
+            createNewShape('Line', { 'FONT_SIZE': 24 });
+        }
     };
 
     const imageMenu: MenuProps['items'] = [

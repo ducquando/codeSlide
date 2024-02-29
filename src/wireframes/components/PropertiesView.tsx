@@ -1,5 +1,5 @@
 /*
- * mydraft.cc
+ * codeslide.net
  *
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
@@ -11,7 +11,7 @@ import classNames from 'classnames';
 import * as React from 'react';
 import { texts } from '@app/texts';
 import { getDiagram, getSelectedItems, useStore } from '@app/wireframes/model';
-import { Colors, CustomProperties, DiagramProperties, LayoutProperties, ShapeProperties, TransformProperties } from './properties';
+import { Colors, CustomProperties, DiagramProperties, LayoutProperties, ShapeProperties } from './properties';
 import './styles/PropertiesView.scss';
 
 export const PropertiesView = () => {
@@ -38,15 +38,17 @@ export const PropertiesView = () => {
             label: texts.common.properties,
             children: <ShapeProperties />,
         },
+        // {
+        //     key: 'transform',
+        //     label: texts.common.transform,
+        //     children: <TransformProperties />,
+        // },
         {
-            key: 'transform',
-            label: texts.common.transform,
-            children: <TransformProperties />,
-        },{
             key: 'visual',
             label: texts.common.layout,
             children: <LayoutProperties />,
-        },{
+        },
+        {
             key: 'custom',
             label: texts.common.custom,
             children: <CustomProperties />,

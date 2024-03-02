@@ -43,7 +43,7 @@ export class Table implements ShapePlugin {
     }
 
     public defaultSize() {
-        return { x: 260, y: 200 };
+        return { x: 500, y: 400 };
     }
 
     public render(ctx: RenderContext) {
@@ -87,7 +87,6 @@ export class Table implements ShapePlugin {
 
         for (let x = 0; x < columnCount; x++) {
             for (let y = 0; y < rows.length; y++) {
-
                 const offsetX = Math.round(x * cellWidth);
                 const offsetY = Math.round(y * cellHeight - strokeWidth * 0.25 - strokeWidth * 0.25);
 

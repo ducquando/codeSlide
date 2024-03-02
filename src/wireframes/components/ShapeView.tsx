@@ -10,7 +10,7 @@ import { Button, Dropdown, Form, Input } from 'antd';
 import type { MenuProps } from 'antd';
 import { getDiagramId, useStore, addShape } from '@app/wireframes/model';
 import * as React from 'react';
-import { ArrowIcon, CircleIcon, FunctionIcon, ImageIcon, RectangleIcon, TableIcon, TextIcon, TriangleIcon, ShapesIcon, LinkIcon, HeadingIcon, SubHeadingIcon, ParagraphIcon, DiamondIcon, VectorIcon, LineIcon } from '@app/icons/icon';
+import { ArrowIcon, CircleIcon, FunctionIcon, ImageIcon, RectangleIcon, TableIcon, TextIcon, TriangleIcon, ShapesIcon, LinkIcon, HeadingIcon, SubHeadingIcon, ParagraphIcon, DiamondIcon, VectorIcon, LineIcon, BezierIcon } from '@app/icons/icon';
 import './styles/ShapeView.scss';
 import { useState } from 'react';
 import classNames from 'classnames';
@@ -86,7 +86,9 @@ export const ShapeView = React.memo(() => {
         }
     ];
     const cellMenuEvtClick: MenuProps['onClick'] = () => {
-        createNewShape('Table', { 'TEXT': Array(numRow).join(Array(numCol).join(',') + ';') });
+        createNewShape('Table', { 
+            'TEXT': Array(numCol).join(',') + Array(numRow).join(';'),
+        });
     };
     const cellMenuEvtLeave: MenuProps['onMouseLeave'] = () => {
         setSelectedCell(0);
@@ -109,12 +111,12 @@ export const ShapeView = React.memo(() => {
     };
 
     const lineMenu: MenuProps['items'] = [
-        { key: 'Line', label: 'Line', icon: <LineIcon />, className: 'menu-shape', },
         { key: 'Arrow', label: 'Arrow', icon: <ArrowIcon />, className: 'menu-shape', },
+        { key: 'Curve', label: 'Curve', icon: <BezierIcon />, className: 'menu-shape', },
     ];
     const lineMenuEvt: MenuProps['onClick'] = ({ key }) => {
-        if (key == 'Arrow') {
-            createNewShape('Line', { 'END_LINE': 'Arrow', 'FONT_SIZE': 24 });
+        if (key == 'Curve') {
+            createNewShape('Line', { 'FONT_SIZE': 24, 'LINE_TYPE': 'Quadratic' });
         } else {
             createNewShape('Line', { 'FONT_SIZE': 24 });
         }

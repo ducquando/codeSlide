@@ -119,7 +119,9 @@ export class TextAdorner extends React.PureComponent<TextAdornerProps> implement
         }
 
         if (this.selectedShape.renderer == 'Table') {
-            const newText = this.textareaElement.value;
+            const newText = this.textareaElement.value
+                .replace(texts.common.tableDelimiterRow, '&#59;')
+                .replace(texts.common.tableDelimiterCol, '&#44;');
             const oldText = getTableAttributes(this.selectedShape.text).rows[this.selectedRow][this.selectedCol];
     
             if (newText !== oldText) {

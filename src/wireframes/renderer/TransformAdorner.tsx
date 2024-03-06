@@ -67,7 +67,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     private moveShape: svg.Element = null!;
     private moveTimer?: Timer | null;
     private resizeShapes: svg.Element[] = [];
-    private rotateShape: svg.Element = null!;
+    // private rotateShape: svg.Element = null!;
     private rotation = Rotation.ZERO;
     private startPosition = Vec2.ZERO;
     private startTransform = Transform.ZERO;
@@ -77,10 +77,11 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         super(props);
 
         this.createResizeRects();
-        this.createRotateShape();
+        // this.createRotateShape();
         this.createMoveShape();
         this.createResizeCorners();
-        this.allElements = [...this.resizeShapes, this.moveShape, this.rotateShape];
+        this.allElements = [...this.resizeShapes, this.moveShape];
+        // this.allElements = [...this.resizeShapes, this.moveShape, this.rotateShape];
         this.hideShapes();
 
         this.props.interactionService.addHandler(this);
@@ -228,7 +229,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
                 return;
             }
 
-            this.rotation = this.transform.rotation;
+            // this.rotation = this.transform.rotation;
 
             this.props.onTransformItems(
                 this.props.selectedDiagram,
@@ -265,8 +266,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
         if (hitItem === this.moveShape) {
             this.manipulationMode = Mode.Move;
-        } else if (hitItem === this.rotateShape) {
-            this.manipulationMode = Mode.Rotate;
+        // } else if (hitItem === this.rotateShape) {
+        //     this.manipulationMode = Mode.Rotate;
         } else {
             this.manipulationMode = Mode.Resize;
             // @ts-ignore
@@ -313,8 +314,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
         if (this.manipulationMode === Mode.Move) {
             this.move(delta, getSnapMode(event.event));
-        } else if (this.manipulationMode === Mode.Rotate) {
-            this.rotate(event, getSnapMode(event.event));
+        // } else if (this.manipulationMode === Mode.Rotate) {
+        //     this.rotate(event, getSnapMode(event.event));
         } else {
             this.resize(delta, getSnapMode(event.event));
         }
@@ -350,23 +351,23 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.debug();
     }
 
-    private rotate(event: SvgEvent, snapMode: SnapMode) {
-        const deltaValue = this.getCummulativeRotation(event);
-        const deltaRotation = this.props.snapManager.snapRotating(this.startTransform, deltaValue, snapMode);
+    // private rotate(event: SvgEvent, snapMode: SnapMode) {
+    //     const deltaValue = this.getCummulativeRotation(event);
+    //     const deltaRotation = this.props.snapManager.snapRotating(this.startTransform, deltaValue, snapMode);
 
-        this.transform = this.startTransform.rotateBy(Rotation.fromDegree(deltaRotation));
-    }
+    //     this.transform = this.startTransform.rotateBy(Rotation.fromDegree(deltaRotation));
+    // }
 
-    private getCummulativeRotation(event: SvgEvent): number {
-        const center = this.startTransform.position;
+    // private getCummulativeRotation(event: SvgEvent): number {
+    //     const center = this.startTransform.position;
 
-        const eventPoint = event.position;
-        const eventStart = this.startPosition;
+    //     const eventPoint = event.position;
+    //     const eventStart = this.startPosition;
 
-        const cummulativeRotation = Vec2.angleBetween(eventStart.sub(center), eventPoint.sub(center));
+    //     const cummulativeRotation = Vec2.angleBetween(eventStart.sub(center), eventPoint.sub(center));
 
-        return cummulativeRotation;
-    }
+    //     return cummulativeRotation;
+    // }
 
     private resize(delta: Vec2, snapMode: SnapMode, showOverlay = false) {
         const startRotation = this.startTransform.rotation;
@@ -448,7 +449,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
                 return;
             }
 
-            this.rotation = this.transform.rotation;
+            // this.rotation = this.transform.rotation;
 
             this.props.onTransformItems(
                 this.props.selectedDiagram,
@@ -540,18 +541,18 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             resizeShape.show();
         }
 
-        this.rotateShape.size(adornerSize, adornerSize);
-        this.rotateShape.stroke(stroke);
-        this.rotateShape.show();
+        // this.rotateShape.size(adornerSize, adornerSize);
+        // this.rotateShape.stroke(stroke);
+        // this.rotateShape.show();
 
-        SVGHelper.setSize(this.rotateShape, adornerSize, adornerSize);
-        SVGHelper.transformBy(this.rotateShape, {
-            x: position.x - adornerSize / 2,
-            y: position.y - adornerSize / 2 - size.y * 0.5 - 15 / this.props.zoom,
-            rx: position.x,
-            ry: position.y,
-            rotation,
-        }, false, true); // Do not set the position by matrix for bounding box calculat
+        // SVGHelper.setSize(this.rotateShape, adornerSize, adornerSize);
+        // SVGHelper.transformBy(this.rotateShape, {
+        //     x: position.x - adornerSize / 2,
+        //     y: position.y - adornerSize / 2 - size.y * 0.5 - 15 / this.props.zoom,
+        //     rx: position.x,
+        //     ry: position.y,
+        //     rotation,
+        // }, false, true); // Do not set the position by matrix for bounding box calculat
 
         this.moveShape.stroke(stroke);
         this.moveShape.show();
@@ -582,15 +583,15 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.moveShape = moveShape;
     }
 
-    private createRotateShape() {
-        const rotateShape =
-            this.props.adorners.ellipse(DRAG_SIZE, DRAG_SIZE)
-                .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill(TRANSFORMER_FILL_COLOR);
+    // private createRotateShape() {
+    //     const rotateShape =
+    //         this.props.adorners.ellipse(DRAG_SIZE, DRAG_SIZE)
+    //             .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill(TRANSFORMER_FILL_COLOR);
 
-        this.props.interactionService.setCursor(rotateShape, 'pointer');
+    //     this.props.interactionService.setCursor(rotateShape, 'pointer');
 
-        this.rotateShape = rotateShape;
-    }
+    //     this.rotateShape = rotateShape;
+    // }
 
     private createResizeRects() {
         const ys = [-0.5,  0.0,  0.0,  0.5];

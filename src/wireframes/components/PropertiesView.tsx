@@ -11,12 +11,13 @@ import classNames from 'classnames';
 import * as React from 'react';
 import { texts } from '@app/texts';
 import { getDiagram, getSelectedItems, useStore } from '@app/wireframes/model';
-import { Colors, CustomProperties, DiagramProperties, LayoutProperties, ShapeProperties } from './properties';
+import { Colors, CustomProperties, DiagramProperties, LayoutProperties, ShapeProperties, TransformProperties } from './properties';
 import './styles/PropertiesView.scss';
 
 export const PropertiesView = () => {
     const selectedItems = useStore(getSelectedItems);
     const selectedItem = useStore(getDiagram);
+    const isModeDesign = useStore(s => s.ui.selectedApplicationMode) == 'design';
     const hasSelection = selectedItems.length > 0;
     const hasDiagram = !!selectedItem;
 
@@ -32,17 +33,12 @@ export const PropertiesView = () => {
         },
     ];
 
-    const objectMenu: CollapseProps['items'] = [
+    const designMenu: CollapseProps['items'] = [
         {
             key: 'properties',
             label: texts.common.properties,
             children: <ShapeProperties />,
         },
-        // {
-        //     key: 'transform',
-        //     label: texts.common.transform,
-        //     children: <TransformProperties />,
-        // },
         {
             key: 'visual',
             label: texts.common.layout,
@@ -54,6 +50,19 @@ export const PropertiesView = () => {
             children: <CustomProperties />,
         },
     ];
+
+    const animateMenu: CollapseProps['items'] = [
+        {
+            key: 'properties',
+            label: texts.common.properties,
+            children: <ShapeProperties />,
+        },
+        {
+            key: 'transform',
+            label: texts.common.transform,
+            children: <TransformProperties />,
+        },
+    ];
       
       
 
@@ -62,8 +71,8 @@ export const PropertiesView = () => {
             <Collapse
                 className={`properties-collapse ${classNames({ hidden: !hasSelection })}`}
                 bordered={false}
-                items={objectMenu}
-                defaultActiveKey={['properties', 'transform']} />
+                items={isModeDesign ? designMenu : animateMenu}
+                defaultActiveKey={['properties', 'transform', 'visual', 'custom']} />
             <Collapse
                 className={`properties-collapse ${classNames({ hidden: hasSelection || !hasDiagram })}`}
                 bordered={false}

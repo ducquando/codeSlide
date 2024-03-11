@@ -5,6 +5,9 @@ import * as React from "react";
 import { getDiagrams, getEditor, selectApplicationMode, setSidebarRightSize, useStore } from "@app/wireframes/model";
 import { AnimationIcon, DesignIcon, IconOutline } from "@app/icons/icon";
 import { useDispatch } from "react-redux";
+import { AbstractControl } from "@app/wireframes/shapes/utils/abstract-control";
+import * as svg from '@svgdotjs/svg.js';
+import { getPlugin } from "@app/wireframes/shapes/utils/abstract-plugin";
 
 export const PresentMenu = React.memo(() => {
     const html = document.querySelector('.editor-diagram')?.innerHTML;
@@ -16,73 +19,41 @@ export const PresentMenu = React.memo(() => {
     const mode = useStore(s => s.ui.selectedApplicationMode);
     const SIDEBAR_RIGHT_WIDTH = 400;
 
-    const retrieveObjects = () => {
-        let allDiagrams = new Array();
-        let allObjects: {[id: string]: any} = {};
+    const fetchObject = () => {
+        const slides = {
+            fileName: fileName,
+            colorBackground: editor.color.toNumber(),
+            size: `${editor.size.x} ${editor.size.y}`
+        };
 
-        diagrams.values.forEach((diagram, i) => {
-            const diagramID = diagram.id;
-            const diagramScript = diagram.script;
+        let shapes: {[id: string]: any} = {};
+        let scripts: string = "";
 
+        diagrams.values.forEach((diagram, _) => {
             diagram.items.values.forEach((item) => {
-                let object: {[id: string]: any} = {};
+                // Get id and svg attribute
                 const id = `${item.id}`;
-                const content = item.text;
-                const bound = item.bounds(diagram);
+                const svgControl = new AbstractControl(getPlugin(item.renderer));
+                const svgElement: svg.Element = svgControl.render(item, undefined);
+                const svgCode = svgElement.node.outerHTML;
 
-                switch (item.renderer) {
-                    case 'Textbox':
-                    case 'Equation':
-                        object['content'] = content;
-                        object['diagram'] = diagramID;
-                        object['id'] = id;
-                        object['style'] = {
-                            alignment: item.textAlignment,
-                            colorBackground: item.backgroundColor,
-                            colorForeground: item.foregroundColor,
-                            fontSize: item.fontSize,
-                            position: `${bound.left} ${bound.top}`,
-                            size: `${bound.size.getX()} ${bound.size.getY()}`,
-                        }
-                        break;
-                    case 'Image':
-                        object['content'] = content;
-                        object['diagram'] = diagramID;
-                        object['id'] = id;
-                        object['style'] = {
-                            alignment: item.textAlignment,
-                            keepAspectRatio: item.getAppearance('ASPECT_RATIO'),
-                            position: `${bound.left} ${bound.top}`,
-                            size: `${bound.size.getX()} ${bound.size.getY()}`,
-                        }
-                        break;
-                    default:
-                        break;
-                }
-
-                allObjects[item.renderer] = (item.renderer in allObjects) ? allObjects[item.renderer] : new Array();
-                allObjects[item.renderer].push(object);
+                // Push object to parent map
+                shapes[id] = svgCode;
             });
 
-            allDiagrams.push({
-                id: diagramID,
-                index: i,
-                script: diagramScript,
-                style: {
-                    colorBackground: editor.color.toNumber(),
-                    size: `${editor.size.x} ${editor.size.y}`
-                }
-            });
+            // Append script
+            scripts += diagram.script + '\n';
         });
 
         return {
-            diagram: allDiagrams,
-            object: allObjects
+            slide: slides,
+            shape: shapes,
+            script: scripts
         }
     }
 
     const fetchAPI = () => {
-        const allObjects = retrieveObjects();
+        const { slide, shape, script } = fetchObject();
 
         if ((html != undefined)) {
             fetch('http://localhost:5001', {
@@ -91,13 +62,11 @@ export const PresentMenu = React.memo(() => {
                     'Content-type': 'application/json; charset=UTF-8',
                 },
                 body: JSON.stringify({
-                    fileName: fileName,
-                    diagram: allObjects.diagram,
-                    image: allObjects.object['Image'],
-                    katex: allObjects.object['Equation'],
-                    shape: null,
-                    table: null,
-                    text: allObjects.object['Textbox']
+                    fileName: slide.fileName,
+                    size: slide.size,
+                    colorBackground: slide.colorBackground,
+                    script: script,
+                    shape: shape
                 })
             })
                 .then((response) => response.json())

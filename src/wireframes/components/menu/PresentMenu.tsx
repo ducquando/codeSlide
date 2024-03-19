@@ -22,8 +22,8 @@ export const PresentMenu = React.memo(() => {
     const fetchObject = () => {
         const slides = {
             fileName: fileName,
-            colorBackground: editor.color.toNumber(),
-            size: `${editor.size.x} ${editor.size.y}`
+            backgroundColor: editor.color.toString(),
+            size: [editor.size.x, editor.size.y]
         };
 
         let shapes: {[id: string]: any} = {};
@@ -31,8 +31,10 @@ export const PresentMenu = React.memo(() => {
 
         diagrams.values.forEach((diagram, _) => {
             diagram.items.values.forEach((item) => {
-                // Get id and svg attribute
-                const id = `${item.id}`;
+                // Get id
+                const id = !item.name ? `${item.id}` : `${item.name}`;
+
+                // Get svg
                 const svgControl = new AbstractControl(getPlugin(item.renderer));
                 const svgElement: svg.Element = svgControl.render(item, undefined);
                 const svgCode = svgElement.node.outerHTML;
@@ -64,7 +66,7 @@ export const PresentMenu = React.memo(() => {
                 body: JSON.stringify({
                     fileName: slide.fileName,
                     size: slide.size,
-                    colorBackground: slide.colorBackground,
+                    backgroundColor: slide.backgroundColor,
                     script: script,
                     shape: shape
                 })

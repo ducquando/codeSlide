@@ -1,25 +1,36 @@
-import { FundProjectionScreenOutlined, MoreOutlined } from "@ant-design/icons";
-import { Button, Dropdown } from "antd";
-import type { MenuProps } from "antd";
+import { FundProjectionScreenOutlined } from "@ant-design/icons";
+import { Button, Segmented, message } from "antd";
 import * as React from "react";
-import { getDiagrams, getEditor, selectApplicationMode, setSidebarRightSize, useStore } from "@app/wireframes/model";
+import { getFilteredDiagrams, getEditor, setMode, setSidebarRightSize, useStore } from "@app/wireframes/model";
 import { AnimationIcon, DesignIcon, IconOutline } from "@app/icons/icon";
 import { useDispatch } from "react-redux";
 import { AbstractControl } from "@app/wireframes/shapes/utils/abstract-control";
 import * as svg from '@svgdotjs/svg.js';
 import { getPlugin } from "@app/wireframes/shapes/utils/abstract-plugin";
+import { SegmentedValue } from "antd/es/segmented";
 
 export const PresentMenu = React.memo(() => {
     const html = document.querySelector('.editor-diagram')?.innerHTML;
+    const SIDEBAR_RIGHT_WIDTH = 400;
 
     const fileName = new Date().getTime();
     const dispatch = useDispatch();
-    const diagrams = useStore(getDiagrams);
+    const diagrams = useStore(getFilteredDiagrams);
     const editor = useStore(getEditor);
-    const mode = useStore(s => s.ui.selectedApplicationMode);
-    const SIDEBAR_RIGHT_WIDTH = 400;
+    const [messageApi, contextHolder] = message.useMessage();
 
-    const fetchObject = () => {
+    const getFrames = () => {
+        let scripts: string[] = [];
+
+        // Append script
+        diagrams.map((diagram, index) => {
+            scripts[index] = diagram.script ?? '';
+        })
+
+        return scripts.toString();
+    }
+
+    const getObject = () => {
         const slides = {
             fileName: fileName,
             backgroundColor: editor.color.toString(),
@@ -27,9 +38,8 @@ export const PresentMenu = React.memo(() => {
         };
 
         let shapes: {[id: string]: any} = {};
-        let scripts: string = "";
 
-        diagrams.values.forEach((diagram, _) => {
+        diagrams.map((diagram, _) => {
             diagram.items.values.forEach((item) => {
                 // Get id
                 const id = !item.name ? `${item.id}` : `${item.name}`;
@@ -42,20 +52,17 @@ export const PresentMenu = React.memo(() => {
                 // Push object to parent map
                 shapes[id] = svgCode;
             });
-
-            // Append script
-            scripts += diagram.script + '\n';
         });
 
         return {
             slide: slides,
-            shape: shapes,
-            script: scripts
+            shape: shapes
         }
     }
 
     const fetchAPI = () => {
-        const { slide, shape, script } = fetchObject();
+        const frames = getFrames();
+        const { slide, shape } = getObject();
 
         if ((html != undefined)) {
             fetch('http://localhost:5001', {
@@ -67,72 +74,48 @@ export const PresentMenu = React.memo(() => {
                     fileName: slide.fileName,
                     size: slide.size,
                     backgroundColor: slide.backgroundColor,
-                    script: script,
+                    frames: frames,
                     shape: shape
                 })
             })
-                .then((response) => response.json())
+                .then((response) => {
+                    response.json();
+                })
                 .then((data) => {
                     console.log(data);
+                    window.open(`http://localhost:8001/${fileName}.html`);
                 })
                 .catch((err) => {
-                    console.log(err);
+                    messageApi.error(`${err}`);
                 });
-
-            // Open new tab
-            window.open(`http://localhost:8001/${fileName}.html`);
         } else {
-            console.log(`${fileName}:\t Error! Cannot perform action.\n`);
+            messageApi.error('Empty slide. Cannot perform action');
         }
     }
 
-    const flipMode = () => {
-        if (mode == 'design') {
-            dispatch(setSidebarRightSize(SIDEBAR_RIGHT_WIDTH));
-            dispatch(selectApplicationMode('animation'));
-        } else {
-            dispatch(setSidebarRightSize(0));
-            dispatch(selectApplicationMode('design'));
-        }
-    }
-
-    const modeMenu: MenuProps['items'] = [
-        { key: 'design', label: 'Design mode', icon: <IconOutline icon={DesignIcon} /> },
-        { key: 'animation', label: 'Animation mode', icon: <IconOutline icon={AnimationIcon} /> },
+    const modeMenu = [
+        { value: 'design', icon: <IconOutline icon={DesignIcon} /> },
+        { value: 'animation', icon: <IconOutline icon={AnimationIcon} /> },
     ];
 
-    const modeMenuEvt: MenuProps['onClick'] = ({key}) => {
+    const modeMenuEvt = (key: SegmentedValue) => {
         if (key == 'design') {
             dispatch(setSidebarRightSize(0));
-            dispatch(selectApplicationMode('design'));
+            dispatch(setMode('design'));
         } else {
             dispatch(setSidebarRightSize(SIDEBAR_RIGHT_WIDTH));
-            dispatch(selectApplicationMode('animation'));
+            dispatch(setMode('animation'));
         }
     };
 
     return (
         <>
-            <Button
-                className='header-mode'
-                style={{ borderRadius: '50% 0 0 50%', borderRight: '0' }}
-                shape='circle'
-                onClick={flipMode} >
-                    { (mode == 'animation') 
-                        ? <IconOutline icon={AnimationIcon} /> 
-                        : <IconOutline icon={DesignIcon} />
-                    }
-            </Button>
-            <Dropdown 
-                menu={{ items: modeMenu, selectable: true, selectedKeys: [mode], onClick: modeMenuEvt }} 
-                trigger={['click']}>
-                    <Button 
-                        className='header-mode'
-                        icon={<MoreOutlined />}
-                        style={{ borderRadius: '0 16px 16px 0', borderLeft: 0, width: 24, minWidth: 24 }} 
-                        shape='circle' />
-            </Dropdown>
+            <Segmented 
+                options={modeMenu}
+                onChange={(value) => modeMenuEvt(value)}
+            />
             <span className='menu-separator' />
+            {contextHolder}
             <Button icon={<FundProjectionScreenOutlined />} onClick={fetchAPI} className="header-cta-right" type="text" shape='round'>
                 <h4>Present</h4>
             </Button>

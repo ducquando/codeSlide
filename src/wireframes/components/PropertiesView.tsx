@@ -17,7 +17,7 @@ import './styles/PropertiesView.scss';
 export const PropertiesView = () => {
     const selectedItems = useStore(getSelectedItems);
     const selectedItem = useStore(getDiagram);
-    const isModeDesign = useStore(s => s.ui.selectedApplicationMode) == 'design';
+    const isModeDesign = useStore(s => s.ui.selectedMode) == 'design';
     const hasSelection = selectedItems.length > 0;
     const hasDiagram = !!selectedItem;
 

@@ -1,14 +1,15 @@
-import { DiagramItem, setSidebarLeftSize } from '@app/wireframes/model';
+import { DiagramItem, setAnimation, setSidebarLeftSize, getDiagram, useStore, changeFrames } from '@app/wireframes/model';
 import * as React from 'react';
 import { ClipboardMenu } from './menu/ClipboardMenu';
 import { TableMenu } from './menu/TableMenu';
 import { GroupingMenu } from './menu/GroupingMenu';
 import './styles/ToolView.scss';
 import { HistoryMenu, VisualMenu, ZoomMenu } from './menu';
-import { Button } from 'antd';
+import { Button, Segmented, message } from 'antd';
 import { ArrowsAltOutlined, FullscreenExitOutlined, SelectOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { SegmentedValue } from "antd/es/segmented";
 
 export interface ToolDesignViewProps {
     item: DiagramItem | null;
@@ -79,20 +80,85 @@ export const ToolDesignView = (props: ToolDesignViewProps) => {
 };
 
 export const ToolAnimationView = () => {
+    const dispatch = useDispatch();
+    const diagram = useStore(getDiagram);
+    const [messageApi, contextHolder] = message.useMessage();
+
+    if (!diagram) {
+        return null;
+    }
+
+    const modeMenu = [
+        { value: 'script', label: 'Animation Script' },
+        { value: 'output', label: 'Output' },
+    ];
+
+    const modeMenuEvt = (key: SegmentedValue) => {
+        if (key == 'script' || key == 'output')
+            dispatch(setAnimation(key));
+    }
+
+    const parseString = (str: string) => {
+        // Remove the outer brackets and split the string into separate items
+        let items = str.slice(2, -2).split('], [');
+
+        // Process each item to remove the quotes and split it into a list
+        let result = items.map(item => {
+            // Split the item into sub-items
+            let subItems = item.split(',');
+            
+            // Process each sub-item to remove the quotes
+            let listItem = subItems.map(subItem => subItem.trim().slice(1, -1));
+            
+            return listItem;
+        });
+        
+        return result;
+    }
+    
+    const fetchFrames = () => {
+        const script = diagram.script;
+
+        if ((script != undefined)) {
+            fetch('http://localhost:5002', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                },
+                body: JSON.stringify({
+                    script: script
+                })
+            })
+                .then((response) => {
+                    return response.json();
+                })
+                .then((data) => {
+                    let frames = parseString(data.frames);
+                    dispatch(changeFrames(diagram.id, frames));
+                    messageApi.success('Script is loaded successfully');
+                })
+                .catch((err) => {
+                    messageApi.error(`${err}`);
+                });
+            } else {
+                messageApi.error('Empty script. Cannot perform action');
+            }
+    }
+
     return (
         <div className='tool-container'>
-            <FullscreenButton />
+            <Segmented 
+                options={modeMenu}
+                onChange={(value) => modeMenuEvt(value)}
+            />
+            {contextHolder}
             <Button 
-                type='text' shape='rounded' 
-                className='tool-cta' 
-                icon={<SelectOutlined />}>
+                type='text' shape='round'
+                className="header-cta-right"
+                icon={<SelectOutlined />}
+                onClick={fetchFrames}>
                     <h4>Load script</h4>
             </Button>
-            <div className='tool-menu'>
-                <HistoryMenu />
-                <span className='menu-separator' />
-                <ZoomMenu />
-            </div>
         </div>
     )
 };

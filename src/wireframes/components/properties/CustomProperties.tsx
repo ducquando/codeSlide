@@ -111,7 +111,7 @@ export const CustomProperties = () => {
     const dispatch = useDispatch();
     const recentColors = useStore(getColors);
     const selectedDiagramId = useStore(getDiagramId);
-    const selectedColorTab = useStore(s => s.ui.selectedColorTab);
+    const selectedColorTab = useStore(s => s.ui.selectedColor);
     const selectedConfigurables = useStore(getSelectedConfigurables);
     const selectedShape = useStore(getSelectedShape);
 

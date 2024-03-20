@@ -25,7 +25,7 @@ export const App = () => {
     const selectedSet = useStore(getSelectedItems);
     const sidebarLeftWidth = useStore(s => s.ui.sidebarLeftSize);
     const sidebarRightWidth = useStore(s => s.ui.sidebarRightSize);
-    const applicationMode = useStore(s => s.ui.selectedApplicationMode);
+    const applicationMode = useStore(s => s.ui.selectedMode);
 
     const SHAPE_WIDTH = 38;
     const PREVIEW_WIDTH = 128;
@@ -81,6 +81,10 @@ export const App = () => {
                                 ?
                                 <Layout>
                                     <Layout>
+                                        <Layout.Header className='header-toolbar-left'>
+                                            <ToolDesignView item={selectedItem} set={selectedSet} />
+                                        </Layout.Header>
+
                                         <EditorView spacing={EDITOR_MARGIN} />
                                     </Layout>
                                     <Layout.Sider 
@@ -90,7 +94,8 @@ export const App = () => {
                                             <Layout.Header className='header-toolbar-right'>
                                                 <ToolAnimationView />
                                             </Layout.Header>
-                                                <AnimationView />
+
+                                            <AnimationView />
                                     </Layout.Sider>
                                 </Layout>
                                 :
@@ -102,9 +107,8 @@ export const App = () => {
                                         <Layout.Sider width={SHAPE_WIDTH} className='sidebar-shape'>
                                             <ShapeView />
                                         </Layout.Sider>
-                                        <Layout>
-                                            <EditorView spacing={EDITOR_MARGIN} />
-                                        </Layout>
+
+                                        <EditorView spacing={EDITOR_MARGIN} />
                                     </Layout>
                                 </Layout>
                             }

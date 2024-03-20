@@ -44,6 +44,9 @@ type Props = {
 
     // The animation script
     script?: string;
+
+    // The animation script
+    frames?: string[][];
 };
 
 export type InitialDiagramProps = {
@@ -64,6 +67,9 @@ export type InitialDiagramProps = {
 
     // The animation script
     script?: string;
+
+    // The animation frames
+    frames?: string[][];
 };
 
 export class Diagram extends Record<Props> {
@@ -95,6 +101,10 @@ export class Diagram extends Record<Props> {
 
     public get script() {
         return this.get('script');
+    }
+
+    public get frames() {
+        return this.get('frames');
     }
 
     public get rootItems(): ReadonlyArray<DiagramItem> {
@@ -275,8 +285,12 @@ export class Diagram extends Record<Props> {
         });
     }
 
-    public changeScript(script: string) {
+    public setScript(script: string) {
         return this.set('script', script);
+    }
+
+    public setFrames(frames: string[][]) {
+        return this.set('frames', frames);
     }
 
     private mutate(targetIds: ReadonlyArray<string>, updater: (diagram: UpdateProps, targetItems: DiagramItem[]) => void): Diagram {

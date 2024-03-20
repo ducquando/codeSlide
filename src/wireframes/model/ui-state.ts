@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ApplicationMode } from '@app/core';
+import { AnimationType, ModeType } from '@app/core';
 
 export interface UIState {
     // The current zoom level.
@@ -23,11 +23,14 @@ export interface UIState {
     // The size for right sidebar
     sidebarRightSize: number;
 
-    // The selected mode for the application.
-    selectedApplicationMode: ApplicationMode;
+    // The mode for the application.
+    selectedMode: ModeType;
+
+    // The animation tab.
+    selectedAnimation: AnimationType;
 
     // The color tab.
-    selectedColorTab: string;
+    selectedColor: string;
 
     // The filter for the diagram.
     diagramsFilter?: string;
@@ -40,8 +43,9 @@ export interface UIStateInStore {
 export const createInitialUIState: () => UIState = () => {
     return {
         zoom: 1,
-        selectedColorTab: 'palette',
-        selectedApplicationMode: 'design',
+        selectedColor: 'palette',
+        selectedMode: 'design',
+        selectedAnimation: 'script',
         sidebarLeftSize: 200,
         sidebarRightSize: 0,
     };

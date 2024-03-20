@@ -9,7 +9,7 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 import { message } from 'antd';
 import { NoticeType } from 'antd/es/message/interface';
 import { AnyAction, Dispatch, Middleware, Reducer } from 'redux';
-import { ApplicationMode } from '@app/core';
+import { AnimationType, ModeType } from '@app/core';
 import { UIState } from './../internal';
 
 
@@ -38,9 +38,14 @@ export const setSidebarRightSize =
         return { payload: { size } };
     });    
 
-export const selectApplicationMode =
-    createAction('ui/applicationMode', (mode: ApplicationMode) => {
+export const setMode =
+    createAction('ui/mode', (mode: ModeType) => {
         return { payload: { mode } };
+    });
+
+export const setAnimation =
+    createAction('ui/animation', (animation: AnimationType) => {
+        return { payload: { animation } };
     });
 
 export const filterDiagrams =
@@ -78,10 +83,13 @@ export function ui(initialState: UIState): Reducer<UIState> {
         .addCase(setSidebarRightSize, (state, action) => {
             state.sidebarRightSize = action.payload.size;
         })
-        .addCase(selectApplicationMode, (state, action) => {
-            state.selectedApplicationMode = action.payload.mode;
+        .addCase(setMode, (state, action) => {
+            state.selectedMode = action.payload.mode;
+        })
+        .addCase(setAnimation, (state, action) => {
+            state.selectedAnimation = action.payload.animation;
         })
         .addCase(selectColorTab, (state, action) => {
-            state.selectedColorTab = action.payload.tab;
+            state.selectedColor = action.payload.tab;
         }));
 }

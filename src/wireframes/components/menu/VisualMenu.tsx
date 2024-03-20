@@ -17,7 +17,7 @@ import { BorderWidthIcon, ColorBackgroundFill, ColorBorderFill, ColorTextFill, I
 export const VisualMenu = React.memo(() => {
     const dispatch = useDispatch();
     const recentColors = useStore(getColors);
-    const selectedColorTab = useStore(s => s.ui.selectedColorTab as any);
+    const selectedColorTab = useStore(s => s.ui.selectedColor as any);
     const selectedDiagramId = useStore(getDiagramId);
     const selectedSet = useStore(getSelectionSet);
 

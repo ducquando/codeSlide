@@ -1,13 +1,14 @@
 import { FundProjectionScreenOutlined } from "@ant-design/icons";
 import { Button, Segmented, message } from "antd";
 import * as React from "react";
-import { getFilteredDiagrams, getEditor, setMode, setSidebarRightSize, useStore } from "@app/wireframes/model";
+import { getFilteredDiagrams, getEditor, setMode, setSidebarRightSize, useStore, Diagram } from "@app/wireframes/model";
 import { AnimationIcon, DesignIcon, IconOutline } from "@app/icons/icon";
 import { useDispatch } from "react-redux";
 import { AbstractControl } from "@app/wireframes/shapes/utils/abstract-control";
 import * as svg from '@svgdotjs/svg.js';
 import { getPlugin } from "@app/wireframes/shapes/utils/abstract-plugin";
 import { SegmentedValue } from "antd/es/segmented";
+import { Color } from "@app/core/utils/color";
 
 export const PresentMenu = React.memo(() => {
     const html = document.querySelector('.editor-diagram')?.innerHTML;
@@ -19,17 +20,49 @@ export const PresentMenu = React.memo(() => {
     const editor = useStore(getEditor);
     const [messageApi, contextHolder] = message.useMessage();
 
+    const getItem = (diagram: Diagram, str: string) => {
+        // Split text using `=` symbol, assuming quotes come in pair
+        const regex = /=(?=(?:[^']*'[^']*')*[^']*$)/;     
+        const [id, json] = str.split(regex);
+
+        // Get item
+        let item = diagram.items.get(id);
+        if (!item || !json) return { item: item, id: id };
+
+        // Parse str -> json
+        let corrected = json.replace(/'/g, '"');
+        let jsonObj: {[index: string]: string} = JSON.parse(corrected);      
+
+        // Modify appearance if there are specifications
+        // e.g. Shape1 = {'TEXT': 'Hello, world!'}
+        for (let [key, value] of Object.entries(jsonObj)) {
+            if (key.endsWith('COLOR')) {
+                const color = Color.fromValue(value).toNumber();
+                item = item.setAppearance(key, color);
+            } else {
+                item = item.setAppearance(key, value);
+            }   
+        }
+
+        return { item: item, id: id };
+    }
+
     const getSlides = () => {
-        // Get frames
         let frame3D: string[][][] = new Array(diagrams.length);
+        
+        // Get frames
         diagrams.map((diagram, i) => {
             const frames = diagram.frames ?? [];
             frame3D[i] = [];
+
             frames.map((frame, j) => {
+                const usedIDs: string[] = [];
                 frame3D[i][j] = [];
-                frame.map((id, _) => {
-                    const item = diagram.items.get(id);
-                    if (!item) return;
+
+                for (let k = frame.length; k > 0; k--) {
+                    const { item, id } = getItem(diagram, frame[k - 1]);
+                    if (!item || usedIDs.includes(id)) continue;
+                    usedIDs.push(id);
                     
                     // Get svg
                     const svgControl = new AbstractControl(getPlugin(item.renderer));
@@ -38,7 +71,7 @@ export const PresentMenu = React.memo(() => {
 
                     // Push object to parent map
                     frame3D[i][j].push(svgCode);
-                })
+                }
             })
         })
 

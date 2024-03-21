@@ -98,7 +98,7 @@ export const ToolAnimationView = () => {
             dispatch(setAnimation(key));
     }
 
-    const parseString = (str: string) => {
+    const strToList = (str: string) => {
         // Remove the outer brackets and split the string into separate items
         let items = str.slice(2, -2).split('], [');
 
@@ -133,7 +133,7 @@ export const ToolAnimationView = () => {
                     return response.json();
                 })
                 .then((data) => {
-                    let frames = parseString(data.frames);
+                    let frames = strToList(data.frames);
                     dispatch(changeFrames(diagram.id, frames));
                     messageApi.success('Script is loaded successfully');
                 })

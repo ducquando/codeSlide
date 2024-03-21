@@ -29,8 +29,6 @@ export const AnimationView = () => {
     const AnimationOutputMenu = () => {
         const selectedFrames = diagram.frames ?? [];
 
-        console.log(selectedFrames);
-    
         return (
             <div className="code-editor">
                 <div>

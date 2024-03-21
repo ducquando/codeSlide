@@ -19,50 +19,42 @@ export const PresentMenu = React.memo(() => {
     const editor = useStore(getEditor);
     const [messageApi, contextHolder] = message.useMessage();
 
-    const getFrames = () => {
-        let scripts: string[] = [];
+    const getSlides = () => {
+        // Get frames
+        let frame3D: string[][][] = new Array(diagrams.length);
+        diagrams.map((diagram, i) => {
+            const frames = diagram.frames ?? [];
+            frame3D[i] = [];
+            frames.map((frame, j) => {
+                frame3D[i][j] = [];
+                frame.map((id, _) => {
+                    const item = diagram.items.get(id);
+                    if (!item) return;
+                    
+                    // Get svg
+                    const svgControl = new AbstractControl(getPlugin(item.renderer));
+                    const svgElement: svg.Element = svgControl.render(item, undefined);
+                    const svgCode = svgElement.node.outerHTML;
 
-        // Append script
-        diagrams.map((diagram, index) => {
-            scripts[index] = diagram.script ?? '';
+                    // Push object to parent map
+                    frame3D[i][j].push(svgCode);
+                })
+            })
         })
 
-        return scripts.toString();
-    }
-
-    const getObject = () => {
-        const slides = {
-            fileName: fileName,
-            backgroundColor: editor.color.toString(),
-            size: [editor.size.x, editor.size.y]
-        };
-
-        let shapes: {[id: string]: any} = {};
-
-        diagrams.map((diagram, _) => {
-            diagram.items.values.forEach((item) => {
-                // Get id
-                const id = !item.name ? `${item.id}` : `${item.name}`;
-
-                // Get svg
-                const svgControl = new AbstractControl(getPlugin(item.renderer));
-                const svgElement: svg.Element = svgControl.render(item, undefined);
-                const svgCode = svgElement.node.outerHTML;
-
-                // Push object to parent map
-                shapes[id] = svgCode;
-            });
-        });
+        // Reshape from 3D to 2D
+        let frame2D = [];
+        for (let row of frame3D) for (let e of row) frame2D.push(e);
 
         return {
-            slide: slides,
-            shape: shapes
-        }
+            backgroundColor: editor.color.toString(),
+            size: [editor.size.x, editor.size.y],
+            frame: frame2D,
+        };
     }
 
     const fetchAPI = () => {
-        const frames = getFrames();
-        const { slide, shape } = getObject();
+        const { size, backgroundColor, frame } = getSlides();
 
         if ((html != undefined)) {
             fetch('http://localhost:5001', {
@@ -71,23 +63,23 @@ export const PresentMenu = React.memo(() => {
                     'Content-type': 'application/json; charset=UTF-8',
                 },
                 body: JSON.stringify({
-                    fileName: slide.fileName,
-                    size: slide.size,
-                    backgroundColor: slide.backgroundColor,
-                    frames: frames,
-                    shape: shape
+                    fileName: fileName,
+                    size: size,
+                    backgroundColor: backgroundColor,
+                    frame: frame,
                 })
             })
                 .then((response) => {
-                    response.json();
+                    return response.json();
                 })
                 .then((data) => {
                     console.log(data);
-                    window.open(`http://localhost:8001/${fileName}.html`);
                 })
                 .catch((err) => {
                     messageApi.error(`${err}`);
                 });
+
+                window.open(`http://localhost:8001/${fileName}.html`);
         } else {
             messageApi.error('Empty slide. Cannot perform action');
         }

@@ -104,8 +104,9 @@ export const ToolAnimationView = () => {
 
         // Process each item to remove the quotes and split it into a list
         let result = items.map(item => {
-            // Split the item into sub-items
-            let subItems = item.split(',');
+            // Split into sub-items using `,` symbol, ignoring those inside curly brackets
+            const regex = /,(?![^{]*})/;
+            let subItems = item.split(regex);
             
             // Process each sub-item to remove the quotes
             let listItem = subItems.map(subItem => subItem.trim().slice(1, -1));

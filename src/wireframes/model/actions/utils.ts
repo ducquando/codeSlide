@@ -19,8 +19,20 @@ interface DiagramAction {
     readonly timestamp: number;
 }
 
+interface ItemAction extends DiagramAction {
+    readonly itemId: string;
+}
+
 interface ItemsAction extends DiagramAction {
     readonly itemIds: ReadonlyArray<string>;
+}
+
+export function createItemAction<T extends {}>(diagram: DiagramRef, item: ItemRef, action?: T): T & AnyAction & ItemAction {
+    const result: any = createDiagramAction(diagram, action);
+
+    result.itemId = Types.isString(item) ? item : item.id;
+
+    return result;
 }
 
 export function createItemsAction<T extends {}>(diagram: DiagramRef, items: ItemsRef, action?: T): T & AnyAction & ItemsAction {

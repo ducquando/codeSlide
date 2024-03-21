@@ -11,12 +11,16 @@ import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
 import { IDHelper, Rotation, Vec2 } from '@app/core';
 import { Appearance } from '@app/wireframes/interface';
 import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer, Transform } from './../internal';
-import { createDiagramAction, createItemsAction, DiagramRef, ItemsRef } from './utils';
-
+import { createDiagramAction, createItemAction, createItemsAction, DiagramRef, ItemRef, ItemsRef } from './utils';
 
 export const addShape =
     createAction('items/addShape', (diagram: DiagramRef, renderer: string, props: { position?: { x: number; y: number }; size?: { x: number; y: number }; appearance?: Appearance } = {}, id?: string) => {
-        return { payload: createDiagramAction(diagram, { id: id || IDHelper.nextId(renderer), renderer, ...props }) };
+        return { payload: createDiagramAction(diagram, { id: id, renderer, ...props }) };
+    });
+
+export const replaceID =
+    createAction('items/replaceID', (diagram: DiagramRef, item: ItemRef, id: string) => {
+        return { payload: createItemAction(diagram, item, { id }) };
     });
 
 export const lockItems =
@@ -89,6 +93,30 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
                 });
             });
         })
+        .addCase(replaceID, (state, action) => {
+            const { diagramId, itemId, id } = action.payload;
+            
+            return state.updateDiagram(diagramId, diagram => {
+                // Get current shape
+                const shape = diagram.items.get(itemId);
+                if (!shape) return diagram;
+
+                // Dublicate item with assigning new id
+                const newId = (diagram.items.has(id)) ? IDHelper.nextId(shape.renderer) : id;
+                const newProps = {
+                    id: newId,
+                    renderer: shape.renderer,
+                    appearance: shape.appearance,
+                    transform: shape.transform,
+                };
+                const newShape = DiagramItem.createShape(newProps);
+                const newDiagram = diagram.addShape(newShape).selectItems([newId]);
+
+                // Remove old item
+                const set = DiagramItemSet.createFromDiagram([itemId], newDiagram);
+                return newDiagram.removeItems(set!);
+            });
+        })
         .addCase(renameItems, (state, action) => {
             const { diagramId, itemIds, name } = action.payload;
 
@@ -120,6 +148,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
         })
         .addCase(addShape, (state, action) => {
             const { diagramId, appearance, id, position, renderer, size } = action.payload;
+            const newId = id || IDHelper.nextId(renderer);
 
             return state.updateDiagram(diagramId, diagram => {
                 const rendererInstance = RendererService.get(renderer);
@@ -129,7 +158,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
                 const initialSize = size || defaultSize;
                 const initialProps = {
                     ...other,
-                    id,
+                    id: newId,
                     transform: new Transform(
                         new Vec2(
                             (position?.x || 0) + 0.5 * initialSize.x, 
@@ -143,7 +172,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
 
                 const shape = DiagramItem.createShape(initialProps);
 
-                return diagram.addShape(shape).selectItems([id]);
+                return diagram.addShape(shape).selectItems([newId]);
             });
         });
 }

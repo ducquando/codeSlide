@@ -6,11 +6,11 @@
 */
 
 export module IDHelper {
-    let CURRENT_ID: { [id: string]: any } = {};
-
-    export function nextId(renderID: string) {
-        CURRENT_ID[renderID] = (renderID in CURRENT_ID) ? CURRENT_ID[renderID] + 1 : 1;
+    let CURRENT_ID: { [renderer: string]: any } = {};
+    
+    export function nextId(renderer: string) {
+        CURRENT_ID[renderer] = (renderer in CURRENT_ID) ? CURRENT_ID[renderer] + 1 : 1;
         
-        return `${renderID}${CURRENT_ID[renderID]}`;
+        return `${renderer}${CURRENT_ID[renderer]}`;
     }
 }

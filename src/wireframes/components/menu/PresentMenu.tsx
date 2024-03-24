@@ -14,15 +14,14 @@ export const PresentMenu = React.memo(() => {
     const html = document.querySelector('.editor-diagram')?.innerHTML;
     const SIDEBAR_RIGHT_WIDTH = 400;
 
-    const fileName = new Date().getTime();
     const dispatch = useDispatch();
     const diagrams = useStore(getFilteredDiagrams);
     const editor = useStore(getEditor);
     const [messageApi, contextHolder] = message.useMessage();
 
     const getItem = (diagram: Diagram, str: string) => {
-        // Split text using `=` symbol, assuming quotes come in pair
-        const regex = /=(?=(?:[^']*'[^']*')*[^']*$)/;     
+        // Split text using `=` symbol, ignoring those inside curly brackets
+        const regex = /=(?![^{]*})/;
         const [id, json] = str.split(regex);
 
         // Get item
@@ -31,6 +30,7 @@ export const PresentMenu = React.memo(() => {
 
         // Parse str -> json
         let corrected = json.replace(/'/g, '"');
+        console.log(corrected);
         let jsonObj: {[index: string]: string} = JSON.parse(corrected);      
 
         // Modify appearance if there are specifications
@@ -69,8 +69,8 @@ export const PresentMenu = React.memo(() => {
                     const svgElement: svg.Element = svgControl.render(item, undefined);
                     const svgCode = svgElement.node.outerHTML;
 
-                    // Push object to parent map
-                    frame3D[i][j].push(svgCode);
+                    // Push object to the head of parent map
+                    frame3D[i][j] = [svgCode, ...frame3D[i][j]];
                 }
             })
         })
@@ -80,6 +80,7 @@ export const PresentMenu = React.memo(() => {
         for (let row of frame3D) for (let e of row) frame2D.push(e);
 
         return {
+            fileName: editor.id,
             backgroundColor: editor.color.toString(),
             size: [editor.size.x, editor.size.y],
             frame: frame2D,
@@ -87,7 +88,7 @@ export const PresentMenu = React.memo(() => {
     }
 
     const fetchAPI = () => {
-        const { size, backgroundColor, frame } = getSlides();
+        const { fileName, size, backgroundColor, frame } = getSlides();
 
         if ((html != undefined)) {
             fetch('http://localhost:5001', {
